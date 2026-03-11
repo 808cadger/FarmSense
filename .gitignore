@@ -1,0 +1,16 @@
+node_modules/
+android/build/
+android/.gradle/
+android/app/build/
+android/.cxx/
+android/local.properties
+.env
+.env.*
+!.env.example
+*.apk
+*.aab
+.DS_Store
+Thumbs.db
+*.log
+.expo/
+dist/
