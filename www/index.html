@@ -107,7 +107,7 @@
     .nav-item.active .nav-icon { transform:scale(1.15); filter:drop-shadow(0 0 6px rgba(124,179,66,0.6)); }
 
     /* ── HOME ── */
-    #home { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom)); overflow:hidden; display:flex; flex-direction:column; }
+    #home { padding-top:calc(var(--safe-top)); overflow:hidden; display:flex; flex-direction:column; }
     .home-greeting { font-size:13px; color:var(--text-muted); margin-bottom:2px; }
     .home-title { font-size:24px; font-weight:800; }
     .home-title span { background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
@@ -338,13 +338,13 @@
       <input class="field-input" id="setupLocation" placeholder="e.g. Austin, TX" maxlength="50">
     </div>
     <div class="setup-step">
-      <div class="setup-step-label">USDA Hardiness Zone</div>
+      <div class="setup-step-label">Growing Zone (USDA)</div>
       <div class="chip-grid" id="zoneChips">
-        <div class="chip" onclick="selectChip('zone','3-4')">3-4</div>
-        <div class="chip" onclick="selectChip('zone','5-6')">5-6</div>
-        <div class="chip selected" onclick="selectChip('zone','7-8')">7-8</div>
-        <div class="chip" onclick="selectChip('zone','9-10')">9-10</div>
-        <div class="chip" onclick="selectChip('zone','11+')">11+</div>
+        <div class="chip" onclick="selectChip('zone','3-4')">❄️ Zone 3-4</div>
+        <div class="chip" onclick="selectChip('zone','5-6')">🌨️ Zone 5-6</div>
+        <div class="chip selected" onclick="selectChip('zone','7-8')">🌤️ Zone 7-8</div>
+        <div class="chip" onclick="selectChip('zone','9-10')">☀️ Zone 9-10</div>
+        <div class="chip" onclick="selectChip('zone','11+')">🌴 Zone 11+</div>
       </div>
     </div>
     <div class="setup-step">
@@ -640,12 +640,13 @@ let state = {
 // INIT
 // ══════════════════════════════════════════
 function loadState() {
-  state.profile = JSON.parse(localStorage.getItem(LS.profile) || 'null');
-  state.garden = JSON.parse(localStorage.getItem(LS.garden) || '[]');
+  const tryParse = (key, fallback) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e) { return fallback; } };
+  state.profile = tryParse(LS.profile, null);
+  state.garden = tryParse(LS.garden, []);
   state.apiKey = localStorage.getItem(LS.apikey) || '';
   state.biometricEnabled = localStorage.getItem(LS.biometric) === 'true';
   state.demoMode = localStorage.getItem(LS.demo) !== 'false';
-  state.scans = JSON.parse(localStorage.getItem(LS.scans) || '[]');
+  state.scans = tryParse(LS.scans, []);
 }
 
 function saveProfile() { localStorage.setItem(LS.profile, JSON.stringify(state.profile)); }
@@ -727,11 +728,16 @@ function finishSetup() {
 // ENTER APP
 // ══════════════════════════════════════════
 function enterApp() {
-  if (state.demoMode && !state.garden.length) seedDemoGarden();
-  showScreen('home');
-  renderHome();
-  renderScoutBar();
-  initScout();
+  try {
+    if (state.demoMode && !state.garden.length) seedDemoGarden();
+    showScreen('home');
+    renderHome();
+    renderScoutBar();
+    if (!state.currentScan) initScout();
+  } catch(e) {
+    console.error('enterApp error:', e);
+    showScreen('home');
+  }
 }
 
 function seedDemoGarden() {
@@ -751,20 +757,39 @@ function seedDemoGarden() {
 function renderHome() {
   const p = state.profile;
   if (!p) return;
-  const hr = new Date().getHours();
-  const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('homeGreeting').textContent = greet + ', ' + p.name;
-  document.getElementById('homeTitle').textContent = p.farmType + ' 🌱';
-  document.getElementById('weatherZone').textContent = 'Zone ' + p.zone + ' · ' + p.location;
-  const month = new Date().getMonth();
-  const season = month<=1||month===11?'Winter':'Winter/Spring transition';
-  const tip = month<=2?'Last frost watch — protect tender seedlings overnight':'Spring planting season — start warm-season crops indoors';
-  document.getElementById('weatherDetail').textContent = season + ' · ' + tip;
-  renderCropList();
+  try {
+    const hr = new Date().getHours();
+    const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+    const month = new Date().getMonth();
+    const seasons = ['Winter','Winter','Late Winter','Spring','Spring','Early Summer','Summer','Summer','Late Summer','Fall','Fall','Winter'];
+    const tips = [
+      'Protect against frost — cover tender plants overnight',
+      'Check seed catalogs — start planning spring planting',
+      'Start seeds indoors for warm-season crops',
+      'Last frost watch — harden off seedlings slowly',
+      'Prime planting time — get warm-season crops in ground',
+      'Water deeply, mulch to retain moisture',
+      'Harvest regularly, watch for heat stress',
+      'Midsummer maintenance — deadhead, fertilize, water',
+      'Harvest season — preserve excess produce',
+      'Plant cool-season crops: greens, root veggies',
+      'Clean up beds, plant garlic and cover crops',
+      'Rest & plan — review what worked this year'
+    ];
+    const el = id => document.getElementById(id);
+    if (el('homeGreeting')) el('homeGreeting').textContent = greet + ', ' + p.name;
+    if (el('homeTitle')) el('homeTitle').textContent = p.farmType + ' 🌱';
+    if (el('weatherZone')) el('weatherZone').textContent = 'Zone ' + p.zone + ' · ' + p.location;
+    if (el('weatherDetail')) el('weatherDetail').textContent = seasons[month] + ' · ' + tips[month];
+    renderCropList();
+  } catch(e) {
+    console.error('renderHome error:', e);
+  }
 }
 
 function renderCropList() {
   const el = document.getElementById('cropList');
+  if (!el) return;
   if (!state.garden.length) {
     el.innerHTML = `<div class="empty-state"><div class="empty-icon">🌾</div><div class="empty-title">No crops yet</div><div class="empty-sub">Add your first plant to start tracking health, disease alerts, and harvest dates</div></div>`;
     return;
@@ -790,8 +815,11 @@ function renderCropList() {
 
 function formatDate(iso) {
   if (!iso) return 'recently';
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return 'recently';
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  } catch(e) { return 'recently'; }
 }
 
 // ══════════════════════════════════════════
@@ -1032,25 +1060,33 @@ async function callClaudeReal(userText, isIntake, expectedTools, crop) {
 
   let thinkingId = addThinking();
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': state.apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4096,
-        system: SYSTEM_PROMPT,
-        tools: TOOLS,
-        messages,
-      }),
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    let res;
+    try {
+      res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': state.apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 4096,
+          system: SYSTEM_PROMPT,
+          tools: TOOLS,
+          messages,
+        }),
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
     removeThinking(thinkingId);
+    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error?.message || 'API error ' + res.status); }
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
     await processResponse(data, messages, crop, isIntake, expectedTools, userText);
   } catch(e) {
     removeThinking(thinkingId);
@@ -1096,6 +1132,7 @@ async function processResponse(data, messages, crop, isIntake, expectedTools, or
     headers:{ 'Content-Type':'application/json', 'x-api-key':state.apiKey, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
     body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:4096, system:SYSTEM_PROMPT, tools:TOOLS, messages }),
   });
+  if (!res2.ok) throw new Error('API continuation error ' + res2.status);
   const data2 = await res2.json();
   const followContent = data2.content || [];
   messages.push({ role:'assistant', content: followContent });
@@ -1550,14 +1587,19 @@ function chatKeydown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefau
 async function sendChat() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text || input.disabled) return;
+  input.disabled = true;
   if (!state.currentScan && !state.garden.length) { openAddCropModal(); return; }
   if (!state.currentScan && state.garden.length) loadScanForCrop(state.garden[0].id);
   input.value = '';
   input.style.height = '';
   addChatMsg('user', text);
   const crop = state.garden.find(c => c.id === state.currentScan?.cropId);
-  await callClaude(text, false, [], crop);
+  try {
+    await callClaude(text, false, [], crop);
+  } finally {
+    input.disabled = false;
+  }
 }
 
 // ══════════════════════════════════════════
@@ -1591,6 +1633,9 @@ function toggleBiometric() {
   state.biometricEnabled = !state.biometricEnabled;
   localStorage.setItem(LS.biometric, state.biometricEnabled.toString());
   document.getElementById('bioToggle').classList.toggle('on', state.biometricEnabled);
+  if (state.biometricEnabled) {
+    alert('Biometric lock enabled. Any 4-digit PIN will unlock the app.');
+  }
 }
 
 function resetApp() {
@@ -1678,8 +1723,8 @@ async function callAdvisorReal(text) {
     headers: { 'x-api-key': state.apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
     body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 800, system: sysPrompt, messages })
   });
+  if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error?.message || 'API error ' + res.status); }
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || 'API error');
   return data.content?.[0]?.text || 'No response.';
 }
 
