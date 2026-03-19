@@ -134,5 +134,5 @@ MIT — do whatever you want, just give the plants some water.
 
 ---
 
-*Built with [Claude claude-sonnet-4-6](https://anthropic.com) · Part of the [808cadger](https://github.com/808cadger) agentic app series*
+*Built with [Claude claude-sonnet-4-6](https://anthropic.com) · Part of the [808cadger](https://codeberg.org/cadger808) agentic app series*
 
