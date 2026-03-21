@@ -37,6 +37,8 @@
     "files": [
       "index.html",
       "manifest.json",
+      "sw.js",
+      "avatar-widget.js",
       "icons/**",
       "electron/**",
       "!node_modules/**",
