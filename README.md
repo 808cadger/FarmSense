@@ -93,7 +93,7 @@ That's it. No `node_modules`, no build pipeline, no server.
 
 ```bash
 # Clone
-git clone git@github.com:808cadger/FarmSense.git
+git clone https://codeberg.org/cadger808/farmsense.git
 cd FarmSense
 
 # Open directly — no server needed for demo mode
