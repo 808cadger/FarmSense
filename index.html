@@ -1015,7 +1015,16 @@ async function callClaudeReal(userText, isIntake, expectedTools, crop) {
     await processResponse(data, messages, crop, isIntake, expectedTools, userText);
   } catch(e) {
     removeThinking(thinkingId);
-    addChatMsg('ai', `⚠️ API error: ${e.message}. Switching to demo mode.`);
+    const s = e.status;
+    let errMsg;
+    if (e.circuitOpen)    errMsg = 'Service temporarily paused — switching to demo mode.';
+    else if (s === 401)   errMsg = 'Invalid API key — tap ⚙️ Settings to update it. Switching to demo mode.';
+    else if (s === 429)   errMsg = 'Too many requests — using demo mode while you wait.';
+    else if (s === 529)   errMsg = 'Claude is overloaded right now — switching to demo mode.';
+    else if (s >= 500)    errMsg = 'Claude is having a moment — switching to demo mode.';
+    else if (e.timeout)   errMsg = 'Request timed out — switching to demo mode.';
+    else                  errMsg = `⚠️ API error: ${e.message}. Switching to demo mode.`;
+    addChatMsg('ai', errMsg);
     state.demoMode = true;
     await callClaudeDemo(userText, isIntake, expectedTools, crop);
   }
@@ -1063,7 +1072,13 @@ async function processResponse(data, messages, crop, isIntake, expectedTools, or
       if (tb.text?.trim()) addChatMsg('ai', tb.text);
     }
   } catch(e2) {
-    addChatMsg('ai', `⚠️ Follow-up error: ${e2.message}`);
+    const s2 = e2.status;
+    let msg2;
+    if (s2 === 401)   msg2 = 'Invalid API key — tap ⚙️ Settings to update it.';
+    else if (s2 === 429)   msg2 = 'Too many requests — wait a moment, then try again.';
+    else if (e2.timeout)   msg2 = 'Follow-up timed out — check your connection and retry.';
+    else                   msg2 = `⚠️ Follow-up error: ${e2.message}`;
+    addChatMsg('ai', msg2);
   }
 
   if (state.currentScan) state.currentScan.chatHistory = messages;
