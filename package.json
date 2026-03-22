@@ -40,6 +40,7 @@
       "manifest.json",
       "sw.js",
       "avatar-widget.js",
+      "share-widget.js",
       "icons/**",
       "electron/**",
       "!node_modules/**",
