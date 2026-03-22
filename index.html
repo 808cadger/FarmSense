@@ -10,6 +10,7 @@
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#7CB342">
   <meta name="share-url" content="https://cadger808.codeberg.page/farmsense">
+  <meta name="apk-url" content="https://codeberg.org/cadger808/farmsense/releases">
   <style>
     :root {
       --primary: #1A4D2E;
@@ -1572,6 +1573,7 @@ function resetApp() {
 // ══════════════════════════════════════════
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
+  <script src="./api-client.js"></script>
   <!-- AI Avatar Bot -->
   <div id="sw-avatar" data-context="AI farm monitoring and crop management assistant for farmers and agricultural workers"></div>
   <script src="./avatar-widget.js"></script>
@@ -1583,6 +1585,5 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
       });
     }
   </script>
-  <script src="./api-client.js"></script>
 </body>
 </html>
