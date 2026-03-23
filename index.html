@@ -528,6 +528,20 @@
       </div>
     </div>
     <div class="settings-section">
+      <div class="settings-section-title">Share</div>
+      <div class="settings-card">
+        <div class="settings-row" onclick="MagicLink.copy('farmsense_apikey')">
+          <div class="settings-row-icon">✨</div>
+          <div class="settings-row-info">
+            <div class="settings-row-label">Copy Magic Link</div>
+            <div class="settings-row-sub">Share a link that auto-fills your API key</div>
+          </div>
+          <div class="settings-row-right">›</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-section-title">Data</div>
       <div class="settings-card">
         <div class="settings-row" onclick="resetApp()">
@@ -616,6 +630,7 @@ let state = {
 function loadState() {
   state.profile = JSON.parse(localStorage.getItem(LS.profile) || 'null');
   state.garden = JSON.parse(localStorage.getItem(LS.garden) || '[]');
+  if (window.MagicLink) MagicLink.apply(LS.apikey);
   state.apiKey = localStorage.getItem(LS.apikey) || '';
   state.biometricEnabled = localStorage.getItem(LS.biometric) === 'true';
   state.demoMode = localStorage.getItem(LS.demo) !== 'false';
@@ -1588,7 +1603,8 @@ function resetApp() {
 // ══════════════════════════════════════════
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
-  <script src="./api-client.js"></script>
+  <script src="./magic-link.js"></script>
+<script src="./api-client.js"></script>
   <!-- AI Avatar Bot -->
   <div id="sw-avatar" data-context="AI farm monitoring and crop management assistant for farmers and agricultural workers"></div>
   <script src="./avatar-widget.js"></script>
