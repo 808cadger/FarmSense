@@ -600,6 +600,12 @@
 </div>
 
 <script>
+// Aloha from Pearl City! — FarmSense boots fast at 5AM
+// #ASSUMPTION: performance.now() available on all target devices
+// #ASSUMPTION: localStorage is available — settings local only, never leaves device
+const perf = { start: performance.now() };
+console.warn(JSON.stringify({ ts: new Date().toISOString(), level: 'perf', msg: 'farmsense-init' }));
+
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════

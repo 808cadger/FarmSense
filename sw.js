@@ -1,4 +1,6 @@
-const CACHE = 'v3-farmsense';
+// Aloha from Pearl City!
+const CACHE_VERSION = "farmsense-v4";
+const CACHE = CACHE_VERSION;
 const PRECACHE = [
   './',
   './index.html',

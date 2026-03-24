@@ -2,7 +2,7 @@
   "name": "FarmSense",
   "short_name": "FarmSense",
   "description": "AI-powered farm monitoring and crop management app",
-  "start_url": "./index.html",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#2D7A4A",
