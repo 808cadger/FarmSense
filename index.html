@@ -362,9 +362,15 @@
 
 <!-- HOME -->
 <div class="screen" id="home">
-  <div class="home-header">
-    <div class="home-greeting" id="homeGreeting">Good morning</div>
-    <div class="home-title"><span id="homeTitle">Your Farm</span></div>
+  <div class="home-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+    <div>
+      <div class="home-greeting" id="homeGreeting">Good morning</div>
+      <div class="home-title"><span id="homeTitle">Your Farm</span></div>
+    </div>
+    <a href="https://cadger808.codeberg.page/zephyr" target="_blank" rel="noopener noreferrer"
+       style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:linear-gradient(135deg,#06B6D4,#0EA5E9);border-radius:9px;text-decoration:none;font-size:17px;box-shadow:0 2px 10px rgba(6,182,212,.45);flex-shrink:0;transition:transform .15s cubic-bezier(.4,0,.2,1);margin-top:2px"
+       title="Get more apps — Zephyr"
+       onmousedown="this.style.transform='scale(0.93)'" onmouseup="this.style.transform='scale(1)'">⚡</a>
   </div>
   <div class="home-scroll" id="homeScroll">
     <div class="weather-banner" id="weatherBanner">
