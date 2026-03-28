@@ -3,23 +3,53 @@
   "short_name": "FarmSense",
   "description": "AI-powered farm monitoring and crop management app",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#2D7A4A",
   "background_color": "#0D2818",
-  "scope": "./",
+  "lang": "en-US",
+  "categories": ["productivity", "utilities", "health"],
+  "shortcuts": [
+    {
+      "name": "Scan Crop",
+      "short_name": "Scan",
+      "description": "Start a new crop scan",
+      "url": "./",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Weather",
+      "short_name": "Weather",
+      "description": "Check local farm weather",
+      "url": "./",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
