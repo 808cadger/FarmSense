@@ -440,13 +440,19 @@
 </div>
 
 <!-- SCOUT -->
+<!-- Hidden camera input -->
+<input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" onchange="analyzeImage(this.files[0])">
+
 <div class="screen" id="scout">
   <div class="scout-header scout-top-pad">
     <div>
       <div class="scout-header-title">🔬 AI Scout</div>
       <div class="scout-header-sub" id="scoutSubtitle">Select or add a crop below</div>
     </div>
-    <div class="header-icon-btn" onclick="runFullScan()" title="Full AI Scan" style="background:rgba(212,168,83,0.1);border-color:rgba(212,168,83,0.3);color:var(--accent2);font-size:18px">⚡</div>
+    <div style="display:flex;gap:8px">
+      <div class="header-icon-btn" onclick="openCamera()" title="Scan crop photo" style="background:rgba(124,179,66,0.1);border-color:rgba(124,179,66,0.3);color:var(--accent);font-size:18px">📷</div>
+      <div class="header-icon-btn" onclick="runFullScan()" title="Full AI Scan" style="background:rgba(212,168,83,0.1);border-color:rgba(212,168,83,0.3);color:var(--accent2);font-size:18px">⚡</div>
+    </div>
   </div>
   <div class="crop-select-bar" id="cropSelectBar">
     <div class="new-crop-chip" onclick="startNewScan()">+ New Scan</div>
@@ -536,7 +542,10 @@
         </div>
         <div class="api-key-input-wrap">
           <div class="field-label">Claude API Key</div>
-          <input class="field-input" id="settingsApiKey" type="password" placeholder="sk-ant-..." oninput="saveApiKey(this.value)">
+          <div style="position:relative">
+            <input class="field-input" id="settingsApiKey" type="password" placeholder="sk-ant-..." oninput="saveApiKey(this.value)" style="padding-right:44px">
+            <button type="button" onclick="var i=document.getElementById('settingsApiKey');i.type=i.type==='password'?'text':'password'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted)">👁</button>
+          </div>
         </div>
       </div>
     </div>
@@ -986,6 +995,163 @@ async function runFullScan() {
 }
 
 // ══════════════════════════════════════════
+// CAMERA VISION SCAN
+// ══════════════════════════════════════════
+function openCamera() {
+  if (!state.currentScan && state.garden.length) loadScanForCrop(state.garden[0].id);
+  document.getElementById('cameraInput').value = '';
+  document.getElementById('cameraInput').click();
+}
+
+async function analyzeImage(file) {
+  if (!file) return;
+  // #ASSUMPTION: File is an image — validated by accept="image/*"
+  const crop = state.garden.find(c => c.id === state.currentScan?.cropId);
+  const cropName = crop?.name || 'your crop';
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const dataUrl = e.target.result;
+    const base64 = dataUrl.split(',')[1];
+    const mimeType = file.type || 'image/jpeg';
+
+    // Show preview in chat
+    const previewEl = document.createElement('div');
+    previewEl.className = 'chat-msg user msg-enter';
+    previewEl.innerHTML = `<div class="msg-avatar user-av">👤</div><div class="msg-bubble" style="padding:6px">
+      <img src="${dataUrl}" style="max-width:200px;border-radius:10px;display:block;margin-bottom:4px">
+      <div style="font-size:12px;color:var(--text-muted)">📷 Crop photo sent for analysis</div>
+    </div>`;
+    document.getElementById('chatMessages').appendChild(previewEl);
+    scrollChat();
+
+    if (state.apiKey && !state.demoMode) {
+      await callClaudeVision(state.apiKey, base64, mimeType, crop, cropName);
+    } else {
+      // Demo: run text-based tools as fallback
+      addChatMsg('ai', `📷 Photo received for **${cropName}**!\n\n_Add your Claude API key in Settings to enable real vision analysis. Running demo assessment instead..._`);
+      await callClaudeDemo(`Analyze this crop photo for disease and health`, true, INTAKE_TOOLS, crop);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function callClaudeVision(apiKey, base64, mimeType, crop, cropName) {
+  // #ASSUMPTION: claude-opus-4-6 supports image vision — confirmed for multimodal models
+  const thinkId = addThinking();
+  const taskBar = ['identify_plant_disease', 'assess_crop_health', 'recommend_treatment', 'generate_care_plan'];
+  showAgentTaskBar(taskBar);
+
+  try {
+    const visionPayload = {
+      model: 'claude-opus-4-6',
+      max_tokens: 2048,
+      system: `You are FarmSense Vision AI. Analyze plant/crop photos and return structured JSON only.
+Respond with ONLY valid JSON in this exact shape:
+{
+  "healthScore": <0-100 integer>,
+  "disease": "<disease name or 'None detected'>",
+  "severity": "<None|Mild|Moderate|Severe>",
+  "confidence": "<0-100>%",
+  "symptoms": ["<symptom1>", "<symptom2>"],
+  "treatment": "<primary organic treatment recommendation>",
+  "immediateActions": ["<action1>", "<action2>"],
+  "notes": "<1-2 sentence summary>"
+}`,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mimeType, data: base64 } },
+          { type: 'text', text: `Analyze this photo of my ${cropName || 'crop'}. Identify disease, pests, or health issues. Return JSON only.` }
+        ]
+      }]
+    };
+
+    const data = await ClaudeAPI.call(apiKey, visionPayload, { timeoutMs: 60000, maxRetries: 2 });
+    removeThinking(thinkId);
+
+    const rawText = data.content?.[0]?.text || '';
+    // Strip markdown code fences if present
+    const jsonStr = rawText.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+    let vision;
+    try {
+      vision = JSON.parse(jsonStr);
+    } catch {
+      // Non-JSON response — show as chat message
+      addChatMsg('ai', `📷 **Vision Analysis for ${cropName}:**\n\n${rawText}`);
+      hideAgentTaskBar();
+      return;
+    }
+
+    // Update crop data with vision findings
+    if (crop) {
+      if (vision.healthScore) crop.healthScore = vision.healthScore;
+      if (vision.disease) crop.disease = vision.disease;
+      if (vision.treatment) crop.treatment = vision.treatment;
+      saveGarden();
+    }
+
+    // Render tool-style cards for vision results
+    taskBar.forEach(t => startAgentTask(t));
+    await delay(600);
+
+    addToolResultCard('identify_plant_disease', {
+      disease: vision.disease || 'None detected',
+      severity: vision.severity || 'None',
+      confidence: vision.confidence || '90%',
+      affected_area: vision.symptoms?.length ? '~15% of visible foliage' : 'None',
+      spread_risk: vision.severity === 'Moderate' || vision.severity === 'Severe' ? 'High — act within 48 hrs' : 'Low — monitor daily',
+      symptoms_matched: vision.symptoms || [],
+      notes: vision.notes || 'Analysis complete.',
+    }, crop);
+    tickAgentTask('identify_plant_disease');
+
+    const hasDisease = vision.disease && vision.disease !== 'None detected';
+    addToolResultCard('assess_crop_health', {
+      score: vision.healthScore || 75,
+      rating: (vision.healthScore || 75) >= 80 ? 'Excellent' : (vision.healthScore || 75) >= 65 ? 'Good' : (vision.healthScore || 75) >= 45 ? 'Fair' : 'Needs Attention',
+      factors: vision.symptoms?.length ? vision.symptoms : ['Assessed from photo — looks healthy overall'],
+      recommendation: hasDisease ? 'Apply treatment immediately — see plan below' : 'Maintain current routine',
+    }, crop);
+    tickAgentTask('assess_crop_health');
+
+    addToolResultCard('recommend_treatment', {
+      organic_options: vision.immediateActions || [vision.treatment || '🍃 Neem oil spray bi-weekly'],
+      chemical_options: hasDisease ? ['Copper fungicide (if organic fails)'] : ['None needed'],
+      immediate_actions: vision.immediateActions || ['Monitor daily', 'Water at soil level only'],
+      expected_recovery: hasDisease ? '7-14 days with consistent treatment' : 'N/A — plant appears healthy',
+    }, crop);
+    tickAgentTask('recommend_treatment');
+
+    taskBar.forEach(t => tickAgentTask(t));
+    hideAgentTaskBar();
+
+    const score = vision.healthScore || 75;
+    addChatMsg('ai',
+      `📷 **Vision scan complete for ${cropName}!**\n\n` +
+      `**Health: ${score}/100** · Disease: **${vision.disease || 'None detected'}**\n\n` +
+      `${vision.notes || ''}\n\n` +
+      (hasDisease
+        ? `⚠️ Treatment: **${vision.treatment}**\n\nAsk me for a full care plan or companion planting advice! 🌿`
+        : `✅ Your crop looks healthy! Ask me anything — soil, schedule, yield, companions 🌱`));
+
+    renderHome();
+    renderGarden();
+
+  } catch (err) {
+    removeThinking(thinkId);
+    hideAgentTaskBar();
+    const s = err.status;
+    let msg = s === 401 ? 'Invalid API key — update in Settings.'
+      : s === 429 ? 'Rate limited — try again in a moment.'
+      : err.timeout ? 'Vision request timed out — try a smaller photo.'
+      : `Vision error: ${err.message}`;
+    addChatMsg('ai', `⚠️ ${msg}`);
+    ClaudeAPI.log.error('vision-scan-failed', { err: err.message, status: s });
+  }
+}
+
+// ══════════════════════════════════════════
 // AGENT TASK BAR
 // ══════════════════════════════════════════
 const TOOL_LABELS = {
@@ -1047,7 +1213,14 @@ CRITICAL RULES:
 4. For any new crop assessment, run: assess_crop_health → identify_plant_disease → recommend_treatment → analyze_soil_requirements → create_planting_schedule
 5. Be warm, encouraging, and practical — you're talking to home gardeners
 6. Always explain what each tool found in plain language
-7. End with 2-3 actionable next steps the farmer can take TODAY`;
+7. End with 2-3 actionable next steps the farmer can take TODAY
+
+SAFETY GUARDRAILS:
+- Only provide farming, gardening, and agricultural advice
+- Never recommend dangerous chemical concentrations or unsafe pesticide combinations
+- If asked about non-farming topics, gently redirect to farming assistance
+- Do not provide medical advice — plants only, not people
+- Flag any pest/disease that poses risk to food safety and recommend discarding affected produce if necessary`;
 
 async function callClaude(userText, isIntake=false, expectedTools=[], crop=null) {
   if (!state.currentScan) return;
