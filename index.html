@@ -104,15 +104,26 @@
     .header-icon-btn { width:40px; height:40px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; }
 
     /* ── BOTTOM NAV ── */
-    .bottom-nav { position:absolute; bottom:0; left:0; right:0; height:calc(var(--nav-h) + var(--safe-bottom)); background:rgba(5,12,7,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid var(--border); display:flex; align-items:flex-start; padding-top:8px; z-index:100; flex-shrink:0; }
-    .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:4px 0; transition:all 0.2s; }
-    .nav-icon { font-size:22px; transition:transform 0.2s; }
-    .nav-label { font-size:10px; font-weight:600; color:var(--text-muted); letter-spacing:0.3px; transition:color 0.2s; }
+    /* ── GLOBAL BOTTOM NAV (single instance, position:fixed) ── */
+    #globalNav { position:fixed; bottom:0; left:0; right:0; z-index:200;
+      height:calc(var(--nav-h) + var(--safe-bottom));
+      background:rgba(5,12,7,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border-top:1px solid var(--border); display:flex; align-items:flex-start; padding-top:6px;
+      padding-bottom:env(safe-area-inset-bottom,0px); }
+    .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+      cursor:pointer; padding:4px 0; transition:all 0.18s cubic-bezier(0.4,0,0.2,1);
+      -webkit-tap-highlight-color:transparent; position:relative; }
+    .nav-pill { position:absolute; top:0; left:50%; transform:translateX(-50%) scaleX(0);
+      width:40px; height:3px; border-radius:0 0 3px 3px; background:var(--accent);
+      transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1); }
+    .nav-item.active .nav-pill { transform:translateX(-50%) scaleX(1); }
+    .nav-svg { width:24px; height:24px; transition:transform 0.18s,filter 0.18s; }
+    .nav-item.active .nav-svg { transform:scale(1.1); filter:drop-shadow(0 0 5px rgba(124,179,66,0.55)); }
+    .nav-label { font-size:10px; font-weight:600; color:var(--text-muted); letter-spacing:0.3px; transition:color 0.18s; }
     .nav-item.active .nav-label { color:var(--accent); }
-    .nav-item.active .nav-icon { transform:scale(1.15); filter:drop-shadow(0 0 6px rgba(124,179,66,0.6)); }
 
     /* ── HOME ── */
-    #home { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom)); overflow:hidden; display:flex; flex-direction:column; }
+    #home { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px); overflow:hidden; display:flex; flex-direction:column; }
     .home-header { padding:18px 20px 12px; flex-shrink:0; }
     .home-greeting { font-size:13px; color:var(--text-muted); margin-bottom:2px; }
     .home-title { font-size:24px; font-weight:800; }
@@ -155,7 +166,7 @@
     .empty-sub { font-size:13px; color:var(--text-muted); line-height:1.5; }
 
     /* ── SCOUT (AI CHAT) ── */
-    #scout { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom)); display:flex; flex-direction:column; overflow:hidden; }
+    #scout { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px); display:flex; flex-direction:column; overflow:hidden; }
     .scout-header { padding:14px 20px 10px; flex-shrink:0; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); }
     .scout-header-info { flex:1; }
     .scout-header-title { font-size:17px; font-weight:700; }
@@ -197,7 +208,7 @@
     .new-crop-chip { padding:6px 14px; border-radius:20px; background:rgba(212,168,83,0.1); border:1.5px solid rgba(212,168,83,0.3); font-size:12px; font-weight:600; color:var(--accent2); cursor:pointer; white-space:nowrap; transition:all 0.2s; flex-shrink:0; }
 
     /* ── GARDEN ── */
-    #garden { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom)); display:flex; flex-direction:column; overflow:hidden; }
+    #garden { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px); display:flex; flex-direction:column; overflow:hidden; }
     .garden-scroll { flex:1; overflow-y:auto; padding:12px 16px; }
     .garden-card { background:var(--bg-card); border:1px solid var(--border); border-radius:18px; padding:16px; margin-bottom:12px; }
     .garden-card-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
@@ -219,7 +230,7 @@
     .cal-day-dot { position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--accent2); }
 
     /* ── SETTINGS ── */
-    #settings { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom)); display:flex; flex-direction:column; overflow:hidden; }
+    #settings { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px); display:flex; flex-direction:column; overflow:hidden; }
     .settings-scroll { flex:1; overflow-y:auto; padding:0 16px 20px; }
     .settings-section { margin-bottom:24px; }
     .settings-section-title { font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; padding:0 4px; }
@@ -431,12 +442,6 @@
       </div>
     </div>
   </div>
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="navTo('home')"><div class="nav-icon">🏡</div><div class="nav-label">Home</div></div>
-    <div class="nav-item" onclick="navTo('scout')"><div class="nav-icon">🔬</div><div class="nav-label">Scout</div></div>
-    <div class="nav-item" onclick="navTo('garden')"><div class="nav-icon">🥬</div><div class="nav-label">Garden</div></div>
-    <div class="nav-item" onclick="navTo('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
-  </div>
 </div>
 
 <!-- SCOUT -->
@@ -465,12 +470,6 @@
       <svg viewBox="0 0 20 20" fill="none"><path d="M3 10L17 10M17 10L12 5M17 10L12 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
   </div>
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="navTo('home')"><div class="nav-icon">🏡</div><div class="nav-label">Home</div></div>
-    <div class="nav-item active" onclick="navTo('scout')"><div class="nav-icon">🔬</div><div class="nav-label">Scout</div></div>
-    <div class="nav-item" onclick="navTo('garden')"><div class="nav-icon">🥬</div><div class="nav-label">Garden</div></div>
-    <div class="nav-item" onclick="navTo('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
-  </div>
 </div>
 
 <!-- GARDEN -->
@@ -486,12 +485,6 @@
       <div class="empty-title">Your garden is empty</div>
       <div class="empty-sub">Add crops to track planting dates, health scores, and harvest timelines</div>
     </div>
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="navTo('home')"><div class="nav-icon">🏡</div><div class="nav-label">Home</div></div>
-    <div class="nav-item" onclick="navTo('scout')"><div class="nav-icon">🔬</div><div class="nav-label">Scout</div></div>
-    <div class="nav-item active" onclick="navTo('garden')"><div class="nav-icon">🥬</div><div class="nav-label">Garden</div></div>
-    <div class="nav-item" onclick="navTo('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
   </div>
 </div>
 
@@ -589,12 +582,6 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="navTo('home')"><div class="nav-icon">🏡</div><div class="nav-label">Home</div></div>
-    <div class="nav-item" onclick="navTo('scout')"><div class="nav-icon">🔬</div><div class="nav-label">Scout</div></div>
-    <div class="nav-item" onclick="navTo('garden')"><div class="nav-icon">🥬</div><div class="nav-label">Garden</div></div>
-    <div class="nav-item active" onclick="navTo('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
   </div>
 </div>
 
@@ -694,14 +681,23 @@ window.addEventListener('load', () => {
 // ══════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════
+const APP_SCREENS = new Set(['home','scout','garden','settings']);
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(id);
   if (target) target.classList.add('active');
+  // Show/hide global nav
+  const nav = document.getElementById('globalNav');
+  if (nav) nav.style.display = APP_SCREENS.has(id) ? 'flex' : 'none';
 }
 
 function navTo(id) {
   showScreen(id);
+  // Update single global nav active state
+  ['home','scout','garden','settings'].forEach(tab => {
+    const el = document.getElementById('nav-' + tab);
+    if (el) el.classList.toggle('active', tab === id);
+  });
   if (id === 'home') renderHome();
   if (id === 'garden') renderGarden();
   if (id === 'settings') renderSettings();
@@ -1839,5 +1835,39 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
   </script>
   <!-- Zephyr distribution network -->
   <script src="https://cadger808.codeberg.page/zephyr/widget.js"></script>
+
+  <!-- ══ GLOBAL BOTTOM NAV — single instance, never duplicated ══ -->
+  <nav id="globalNav" role="navigation" aria-label="Main navigation">
+    <div class="nav-item active" id="nav-home" onclick="navTo('home')" role="button" aria-label="Home">
+      <div class="nav-pill"></div>
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9,21 9,12 15,12 15,21"/>
+      </svg>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" id="nav-scout" onclick="navTo('scout')" role="button" aria-label="Scout">
+      <div class="nav-pill"></div>
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+      </svg>
+      <div class="nav-label">Scout</div>
+    </div>
+    <div class="nav-item" id="nav-garden" onclick="navTo('garden')" role="button" aria-label="Garden">
+      <div class="nav-pill"></div>
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22V12"/><path d="M12 12C12 8 9 4 4 4c0 4 2.5 7.5 8 8z"/><path d="M12 12C12 8 15 4 20 4c0 4-2.5 7.5-8 8z"/>
+      </svg>
+      <div class="nav-label">Garden</div>
+    </div>
+    <div class="nav-item" id="nav-settings" onclick="navTo('settings')" role="button" aria-label="Settings">
+      <div class="nav-pill"></div>
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+      <div class="nav-label">Settings</div>
+    </div>
+  </nav>
 </body>
 </html>

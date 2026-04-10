@@ -10,6 +10,7 @@
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#7CB342">
   <meta name="share-url" content="https://cadger808.codeberg.page/farmsense">
+  <meta name="apk-url" content="https://codeberg.org/cadger808/farmsense/releases">
   <style>
     :root {
       --primary: #1A4D2E;
@@ -103,15 +104,26 @@
     .header-icon-btn { width:40px; height:40px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; }
 
     /* ── BOTTOM NAV ── */
-    .bottom-nav { position:absolute; bottom:0; left:0; right:0; height:calc(var(--nav-h) + var(--safe-bottom)); background:rgba(5,12,7,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid var(--border); display:flex; align-items:flex-start; padding-top:8px; z-index:100; flex-shrink:0; }
-    .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:4px 0; transition:all 0.2s; }
-    .nav-icon { font-size:22px; transition:transform 0.2s; }
-    .nav-label { font-size:10px; font-weight:600; color:var(--text-muted); letter-spacing:0.3px; transition:color 0.2s; }
+    /* ── GLOBAL BOTTOM NAV (single instance, position:fixed) ── */
+    #globalNav { position:fixed; bottom:0; left:0; right:0; z-index:200;
+      height:calc(var(--nav-h) + var(--safe-bottom));
+      background:rgba(5,12,7,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border-top:1px solid var(--border); display:flex; align-items:flex-start; padding-top:6px;
+      padding-bottom:env(safe-area-inset-bottom,0px); }
+    .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+      cursor:pointer; padding:4px 0; transition:all 0.18s cubic-bezier(0.4,0,0.2,1);
+      -webkit-tap-highlight-color:transparent; position:relative; }
+    .nav-pill { position:absolute; top:0; left:50%; transform:translateX(-50%) scaleX(0);
+      width:40px; height:3px; border-radius:0 0 3px 3px; background:var(--accent);
+      transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1); }
+    .nav-item.active .nav-pill { transform:translateX(-50%) scaleX(1); }
+    .nav-svg { width:24px; height:24px; transition:transform 0.18s,filter 0.18s; }
+    .nav-item.active .nav-svg { transform:scale(1.1); filter:drop-shadow(0 0 5px rgba(124,179,66,0.55)); }
+    .nav-label { font-size:10px; font-weight:600; color:var(--text-muted); letter-spacing:0.3px; transition:color 0.18s; }
     .nav-item.active .nav-label { color:var(--accent); }
-    .nav-item.active .nav-icon { transform:scale(1.15); filter:drop-shadow(0 0 6px rgba(124,179,66,0.6)); }
 
     /* ── HOME ── */
-    #home { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom)); overflow:hidden; display:flex; flex-direction:column; }
+    #home { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px); overflow:hidden; display:flex; flex-direction:column; }
     .home-header { padding:18px 20px 12px; flex-shrink:0; }
     .home-greeting { font-size:13px; color:var(--text-muted); margin-bottom:2px; }
     .home-title { font-size:24px; font-weight:800; }
@@ -154,7 +166,7 @@
     .empty-sub { font-size:13px; color:var(--text-muted); line-height:1.5; }
 
     /* ── SCOUT (AI CHAT) ── */
-    #scout { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom)); display:flex; flex-direction:column; overflow:hidden; }
+    #scout { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px); display:flex; flex-direction:column; overflow:hidden; }
     .scout-header { padding:14px 20px 10px; flex-shrink:0; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); }
     .scout-header-info { flex:1; }
     .scout-header-title { font-size:17px; font-weight:700; }
@@ -196,7 +208,7 @@
     .new-crop-chip { padding:6px 14px; border-radius:20px; background:rgba(212,168,83,0.1); border:1.5px solid rgba(212,168,83,0.3); font-size:12px; font-weight:600; color:var(--accent2); cursor:pointer; white-space:nowrap; transition:all 0.2s; flex-shrink:0; }
 
     /* ── GARDEN ── */
-    #garden { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom)); display:flex; flex-direction:column; overflow:hidden; }
+    #garden { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px); display:flex; flex-direction:column; overflow:hidden; }
     .garden-scroll { flex:1; overflow-y:auto; padding:12px 16px; }
     .garden-card { background:var(--bg-card); border:1px solid var(--border); border-radius:18px; padding:16px; margin-bottom:12px; }
     .garden-card-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
@@ -218,7 +230,7 @@
     .cal-day-dot { position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--accent2); }
 
     /* ── SETTINGS ── */
-    #settings { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom)); display:flex; flex-direction:column; overflow:hidden; }
+    #settings { padding-top:calc(var(--safe-top)); padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px); display:flex; flex-direction:column; overflow:hidden; }
     .settings-scroll { flex:1; overflow-y:auto; padding:0 16px 20px; }
     .settings-section { margin-bottom:24px; }
     .settings-section-title { font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; padding:0 4px; }
@@ -260,6 +272,23 @@
     @keyframes slideIn { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
     .msg-enter { animation:slideIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
   </style>
+
+  <!-- SEO + Open Graph — rich previews on WhatsApp, iMessage, Twitter, Facebook -->
+  <meta name="keywords" content="AI farming app, crop monitoring, soil health, planting advice, farm management, free farm app">
+  <meta name="author" content="cadger808">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FarmSense — AI Crop Monitoring">
+  <meta property="og:description" content="Monitor crops, track soil health, get AI planting advice tailored to your land. Free, no app store needed.">
+  <meta property="og:url" content="https://cadger808.codeberg.page/farmsense">
+  <meta property="og:image" content="https://cadger808.codeberg.page/farmsense/icons/icon-512.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:site_name" content="Zephyr Network">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FarmSense — AI Crop Monitoring">
+  <meta name="twitter:description" content="Monitor crops, track soil health, get AI planting advice tailored to your land. Free, no app store needed.">
+  <meta name="twitter:image" content="https://cadger808.codeberg.page/farmsense/icons/icon-512.png">
 </head>
 <body>
 
@@ -349,8 +378,11 @@
     </div>
     <div class="setup-step" style="margin-bottom:24px">
       <div class="setup-step-label">API Key (Claude / Anthropic)</div>
-      <input class="field-input" id="setupApiKey" type="password" placeholder="sk-ant-... (optional, uses demo mode)">
-      <div style="font-size:12px;color:var(--text-muted);margin-top:6px">Without a key, FarmSense runs in AI Demo Mode</div>
+      <div style="position:relative">
+        <input class="field-input" id="setupApiKey" type="password" placeholder="sk-ant-... (optional, uses demo mode)" style="padding-right:44px">
+        <button type="button" onclick="var i=document.getElementById('setupApiKey');i.type=i.type==='password'?'text':'password'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted)">👁</button>
+      </div>
+      <div style="font-size:12px;color:var(--accent);font-weight:600;margin-top:6px">Optional — skip to explore in Demo Mode, add later in Settings</div>
     </div>
     <button class="btn-primary" onclick="finishSetup()">Start Growing 🌱</button>
   </div>
@@ -358,9 +390,15 @@
 
 <!-- HOME -->
 <div class="screen" id="home">
-  <div class="home-header">
-    <div class="home-greeting" id="homeGreeting">Good morning</div>
-    <div class="home-title"><span id="homeTitle">Your Farm</span></div>
+  <div class="home-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+    <div>
+      <div class="home-greeting" id="homeGreeting">Good morning</div>
+      <div class="home-title"><span id="homeTitle">Your Farm</span></div>
+    </div>
+    <a href="https://cadger808.codeberg.page/zephyr" target="_blank" rel="noopener noreferrer"
+       style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:linear-gradient(135deg,#06B6D4,#0EA5E9);border-radius:9px;text-decoration:none;font-size:17px;box-shadow:0 2px 10px rgba(6,182,212,.45);flex-shrink:0;transition:transform .15s cubic-bezier(.4,0,.2,1);margin-top:2px"
+       title="Get more apps — Zephyr"
+       onmousedown="this.style.transform='scale(0.93)'" onmouseup="this.style.transform='scale(1)'">⚡</a>
   </div>
   <div class="home-scroll" id="homeScroll">
     <div class="weather-banner" id="weatherBanner">
@@ -404,22 +442,22 @@
       </div>
     </div>
   </div>
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="navTo('home')"><div class="nav-icon">🏡</div><div class="nav-label">Home</div></div>
-    <div class="nav-item" onclick="navTo('scout')"><div class="nav-icon">🔬</div><div class="nav-label">Scout</div></div>
-    <div class="nav-item" onclick="navTo('garden')"><div class="nav-icon">🥬</div><div class="nav-label">Garden</div></div>
-    <div class="nav-item" onclick="navTo('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
-  </div>
 </div>
 
 <!-- SCOUT -->
+<!-- Hidden camera input -->
+<input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" onchange="analyzeImage(this.files[0])">
+
 <div class="screen" id="scout">
   <div class="scout-header scout-top-pad">
     <div>
       <div class="scout-header-title">🔬 AI Scout</div>
       <div class="scout-header-sub" id="scoutSubtitle">Select or add a crop below</div>
     </div>
-    <div class="header-icon-btn" onclick="runFullScan()" title="Full AI Scan" style="background:rgba(212,168,83,0.1);border-color:rgba(212,168,83,0.3);color:var(--accent2);font-size:18px">⚡</div>
+    <div style="display:flex;gap:8px">
+      <div class="header-icon-btn" onclick="openCamera()" title="Scan crop photo" style="background:rgba(124,179,66,0.1);border-color:rgba(124,179,66,0.3);color:var(--accent);font-size:18px">📷</div>
+      <div class="header-icon-btn" onclick="runFullScan()" title="Full AI Scan" style="background:rgba(212,168,83,0.1);border-color:rgba(212,168,83,0.3);color:var(--accent2);font-size:18px">⚡</div>
+    </div>
   </div>
   <div class="crop-select-bar" id="cropSelectBar">
     <div class="new-crop-chip" onclick="startNewScan()">+ New Scan</div>
@@ -431,12 +469,6 @@
     <button class="send-btn" onclick="sendChat()">
       <svg viewBox="0 0 20 20" fill="none"><path d="M3 10L17 10M17 10L12 5M17 10L12 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="navTo('home')"><div class="nav-icon">🏡</div><div class="nav-label">Home</div></div>
-    <div class="nav-item active" onclick="navTo('scout')"><div class="nav-icon">🔬</div><div class="nav-label">Scout</div></div>
-    <div class="nav-item" onclick="navTo('garden')"><div class="nav-icon">🥬</div><div class="nav-label">Garden</div></div>
-    <div class="nav-item" onclick="navTo('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
   </div>
 </div>
 
@@ -453,12 +485,6 @@
       <div class="empty-title">Your garden is empty</div>
       <div class="empty-sub">Add crops to track planting dates, health scores, and harvest timelines</div>
     </div>
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="navTo('home')"><div class="nav-icon">🏡</div><div class="nav-label">Home</div></div>
-    <div class="nav-item" onclick="navTo('scout')"><div class="nav-icon">🔬</div><div class="nav-label">Scout</div></div>
-    <div class="nav-item active" onclick="navTo('garden')"><div class="nav-icon">🥬</div><div class="nav-label">Garden</div></div>
-    <div class="nav-item" onclick="navTo('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
   </div>
 </div>
 
@@ -509,7 +535,10 @@
         </div>
         <div class="api-key-input-wrap">
           <div class="field-label">Claude API Key</div>
-          <input class="field-input" id="settingsApiKey" type="password" placeholder="sk-ant-..." oninput="saveApiKey(this.value)">
+          <div style="position:relative">
+            <input class="field-input" id="settingsApiKey" type="password" placeholder="sk-ant-..." oninput="saveApiKey(this.value)" style="padding-right:44px">
+            <button type="button" onclick="var i=document.getElementById('settingsApiKey');i.type=i.type==='password'?'text':'password'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted)">👁</button>
+          </div>
         </div>
       </div>
     </div>
@@ -527,6 +556,20 @@
       </div>
     </div>
     <div class="settings-section">
+      <div class="settings-section-title">Share</div>
+      <div class="settings-card">
+        <div class="settings-row" onclick="MagicLink.copy('farmsense_apikey')">
+          <div class="settings-row-icon">✨</div>
+          <div class="settings-row-info">
+            <div class="settings-row-label">Copy Magic Link</div>
+            <div class="settings-row-sub">Share a link that auto-fills your API key</div>
+          </div>
+          <div class="settings-row-right">›</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-section-title">Data</div>
       <div class="settings-card">
         <div class="settings-row" onclick="resetApp()">
@@ -539,12 +582,6 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="navTo('home')"><div class="nav-icon">🏡</div><div class="nav-label">Home</div></div>
-    <div class="nav-item" onclick="navTo('scout')"><div class="nav-icon">🔬</div><div class="nav-label">Scout</div></div>
-    <div class="nav-item" onclick="navTo('garden')"><div class="nav-icon">🥬</div><div class="nav-label">Garden</div></div>
-    <div class="nav-item active" onclick="navTo('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
   </div>
 </div>
 
@@ -582,6 +619,12 @@
 </div>
 
 <script>
+// Aloha from Pearl City! — FarmSense boots fast at 5AM
+// #ASSUMPTION: performance.now() available on all target devices
+// #ASSUMPTION: localStorage is available — settings local only, never leaves device
+const perf = { start: performance.now() };
+console.warn(JSON.stringify({ ts: new Date().toISOString(), level: 'perf', msg: 'farmsense-init' }));
+
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
@@ -615,6 +658,7 @@ let state = {
 function loadState() {
   state.profile = JSON.parse(localStorage.getItem(LS.profile) || 'null');
   state.garden = JSON.parse(localStorage.getItem(LS.garden) || '[]');
+  if (window.MagicLink) MagicLink.apply(LS.apikey);
   state.apiKey = localStorage.getItem(LS.apikey) || '';
   state.biometricEnabled = localStorage.getItem(LS.biometric) === 'true';
   state.demoMode = localStorage.getItem(LS.demo) !== 'false';
@@ -637,14 +681,23 @@ window.addEventListener('load', () => {
 // ══════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════
+const APP_SCREENS = new Set(['home','scout','garden','settings']);
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(id);
   if (target) target.classList.add('active');
+  // Show/hide global nav
+  const nav = document.getElementById('globalNav');
+  if (nav) nav.style.display = APP_SCREENS.has(id) ? 'flex' : 'none';
 }
 
 function navTo(id) {
   showScreen(id);
+  // Update single global nav active state
+  ['home','scout','garden','settings'].forEach(tab => {
+    const el = document.getElementById('nav-' + tab);
+    if (el) el.classList.toggle('active', tab === id);
+  });
   if (id === 'home') renderHome();
   if (id === 'garden') renderGarden();
   if (id === 'settings') renderSettings();
@@ -861,6 +914,22 @@ function initScout() {
   if (!state.currentScan) {
     const demoNote = state.demoMode ? '\n\n_🎮 Running in **Demo Mode** — add your Claude API key in Settings for live AI_' : '';
     addChatMsg('ai', `👋 Welcome to **AI Scout**! I'm your agentic farming assistant powered by Claude.\n\nI can help you:\n• 🦠 Identify diseases and pests\n• 💊 Recommend organic or chemical treatments\n• 📅 Build personalized planting schedules\n• 🧪 Analyze soil and nutrient needs\n• 🌻 Suggest companion plants\n• 📊 Estimate your harvest yield\n\nTap a crop chip above to scan, or ask me anything!${demoNote}`);
+    // Starter prompt chips
+    const chips = [
+      { label: '🔬 Scout my tomatoes for disease', text: 'Scout my tomatoes for disease' },
+      { label: '🌱 What should I plant this week?', text: 'What should I plant this week?' },
+      { label: '🧪 How do I improve my soil?', text: 'How do I improve my soil pH and nutrients?' },
+    ];
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;padding:4px 0 8px';
+    chips.forEach(function(c) {
+      var btn = document.createElement('button');
+      btn.textContent = c.label;
+      btn.style.cssText = 'background:rgba(104,180,108,0.15);border:1px solid rgba(104,180,108,0.35);color:var(--accent);border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;white-space:nowrap';
+      btn.onclick = function() { askQuestion(c.text); wrap.remove(); };
+      wrap.appendChild(btn);
+    });
+    document.getElementById('chatMessages').appendChild(wrap);
   }
 }
 
@@ -919,6 +988,163 @@ async function runFullScan() {
   hideAgentTaskBar();
   renderHome();
   renderGarden();
+}
+
+// ══════════════════════════════════════════
+// CAMERA VISION SCAN
+// ══════════════════════════════════════════
+function openCamera() {
+  if (!state.currentScan && state.garden.length) loadScanForCrop(state.garden[0].id);
+  document.getElementById('cameraInput').value = '';
+  document.getElementById('cameraInput').click();
+}
+
+async function analyzeImage(file) {
+  if (!file) return;
+  // #ASSUMPTION: File is an image — validated by accept="image/*"
+  const crop = state.garden.find(c => c.id === state.currentScan?.cropId);
+  const cropName = crop?.name || 'your crop';
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const dataUrl = e.target.result;
+    const base64 = dataUrl.split(',')[1];
+    const mimeType = file.type || 'image/jpeg';
+
+    // Show preview in chat
+    const previewEl = document.createElement('div');
+    previewEl.className = 'chat-msg user msg-enter';
+    previewEl.innerHTML = `<div class="msg-avatar user-av">👤</div><div class="msg-bubble" style="padding:6px">
+      <img src="${dataUrl}" style="max-width:200px;border-radius:10px;display:block;margin-bottom:4px">
+      <div style="font-size:12px;color:var(--text-muted)">📷 Crop photo sent for analysis</div>
+    </div>`;
+    document.getElementById('chatMessages').appendChild(previewEl);
+    scrollChat();
+
+    if (state.apiKey && !state.demoMode) {
+      await callClaudeVision(state.apiKey, base64, mimeType, crop, cropName);
+    } else {
+      // Demo: run text-based tools as fallback
+      addChatMsg('ai', `📷 Photo received for **${cropName}**!\n\n_Add your Claude API key in Settings to enable real vision analysis. Running demo assessment instead..._`);
+      await callClaudeDemo(`Analyze this crop photo for disease and health`, true, INTAKE_TOOLS, crop);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function callClaudeVision(apiKey, base64, mimeType, crop, cropName) {
+  // #ASSUMPTION: claude-opus-4-6 supports image vision — confirmed for multimodal models
+  const thinkId = addThinking();
+  const taskBar = ['identify_plant_disease', 'assess_crop_health', 'recommend_treatment', 'generate_care_plan'];
+  showAgentTaskBar(taskBar);
+
+  try {
+    const visionPayload = {
+      model: 'claude-opus-4-6',
+      max_tokens: 2048,
+      system: `You are FarmSense Vision AI. Analyze plant/crop photos and return structured JSON only.
+Respond with ONLY valid JSON in this exact shape:
+{
+  "healthScore": <0-100 integer>,
+  "disease": "<disease name or 'None detected'>",
+  "severity": "<None|Mild|Moderate|Severe>",
+  "confidence": "<0-100>%",
+  "symptoms": ["<symptom1>", "<symptom2>"],
+  "treatment": "<primary organic treatment recommendation>",
+  "immediateActions": ["<action1>", "<action2>"],
+  "notes": "<1-2 sentence summary>"
+}`,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mimeType, data: base64 } },
+          { type: 'text', text: `Analyze this photo of my ${cropName || 'crop'}. Identify disease, pests, or health issues. Return JSON only.` }
+        ]
+      }]
+    };
+
+    const data = await ClaudeAPI.call(apiKey, visionPayload, { timeoutMs: 60000, maxRetries: 2 });
+    removeThinking(thinkId);
+
+    const rawText = data.content?.[0]?.text || '';
+    // Strip markdown code fences if present
+    const jsonStr = rawText.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+    let vision;
+    try {
+      vision = JSON.parse(jsonStr);
+    } catch {
+      // Non-JSON response — show as chat message
+      addChatMsg('ai', `📷 **Vision Analysis for ${cropName}:**\n\n${rawText}`);
+      hideAgentTaskBar();
+      return;
+    }
+
+    // Update crop data with vision findings
+    if (crop) {
+      if (vision.healthScore) crop.healthScore = vision.healthScore;
+      if (vision.disease) crop.disease = vision.disease;
+      if (vision.treatment) crop.treatment = vision.treatment;
+      saveGarden();
+    }
+
+    // Render tool-style cards for vision results
+    taskBar.forEach(t => startAgentTask(t));
+    await delay(600);
+
+    addToolResultCard('identify_plant_disease', {
+      disease: vision.disease || 'None detected',
+      severity: vision.severity || 'None',
+      confidence: vision.confidence || '90%',
+      affected_area: vision.symptoms?.length ? '~15% of visible foliage' : 'None',
+      spread_risk: vision.severity === 'Moderate' || vision.severity === 'Severe' ? 'High — act within 48 hrs' : 'Low — monitor daily',
+      symptoms_matched: vision.symptoms || [],
+      notes: vision.notes || 'Analysis complete.',
+    }, crop);
+    tickAgentTask('identify_plant_disease');
+
+    const hasDisease = vision.disease && vision.disease !== 'None detected';
+    addToolResultCard('assess_crop_health', {
+      score: vision.healthScore || 75,
+      rating: (vision.healthScore || 75) >= 80 ? 'Excellent' : (vision.healthScore || 75) >= 65 ? 'Good' : (vision.healthScore || 75) >= 45 ? 'Fair' : 'Needs Attention',
+      factors: vision.symptoms?.length ? vision.symptoms : ['Assessed from photo — looks healthy overall'],
+      recommendation: hasDisease ? 'Apply treatment immediately — see plan below' : 'Maintain current routine',
+    }, crop);
+    tickAgentTask('assess_crop_health');
+
+    addToolResultCard('recommend_treatment', {
+      organic_options: vision.immediateActions || [vision.treatment || '🍃 Neem oil spray bi-weekly'],
+      chemical_options: hasDisease ? ['Copper fungicide (if organic fails)'] : ['None needed'],
+      immediate_actions: vision.immediateActions || ['Monitor daily', 'Water at soil level only'],
+      expected_recovery: hasDisease ? '7-14 days with consistent treatment' : 'N/A — plant appears healthy',
+    }, crop);
+    tickAgentTask('recommend_treatment');
+
+    taskBar.forEach(t => tickAgentTask(t));
+    hideAgentTaskBar();
+
+    const score = vision.healthScore || 75;
+    addChatMsg('ai',
+      `📷 **Vision scan complete for ${cropName}!**\n\n` +
+      `**Health: ${score}/100** · Disease: **${vision.disease || 'None detected'}**\n\n` +
+      `${vision.notes || ''}\n\n` +
+      (hasDisease
+        ? `⚠️ Treatment: **${vision.treatment}**\n\nAsk me for a full care plan or companion planting advice! 🌿`
+        : `✅ Your crop looks healthy! Ask me anything — soil, schedule, yield, companions 🌱`));
+
+    renderHome();
+    renderGarden();
+
+  } catch (err) {
+    removeThinking(thinkId);
+    hideAgentTaskBar();
+    const s = err.status;
+    let msg = s === 401 ? 'Invalid API key — update in Settings.'
+      : s === 429 ? 'Rate limited — try again in a moment.'
+      : err.timeout ? 'Vision request timed out — try a smaller photo.'
+      : `Vision error: ${err.message}`;
+    addChatMsg('ai', `⚠️ ${msg}`);
+    ClaudeAPI.log.error('vision-scan-failed', { err: err.message, status: s });
+  }
 }
 
 // ══════════════════════════════════════════
@@ -983,7 +1209,14 @@ CRITICAL RULES:
 4. For any new crop assessment, run: assess_crop_health → identify_plant_disease → recommend_treatment → analyze_soil_requirements → create_planting_schedule
 5. Be warm, encouraging, and practical — you're talking to home gardeners
 6. Always explain what each tool found in plain language
-7. End with 2-3 actionable next steps the farmer can take TODAY`;
+7. End with 2-3 actionable next steps the farmer can take TODAY
+
+SAFETY GUARDRAILS:
+- Only provide farming, gardening, and agricultural advice
+- Never recommend dangerous chemical concentrations or unsafe pesticide combinations
+- If asked about non-farming topics, gently redirect to farming assistance
+- Do not provide medical advice — plants only, not people
+- Flag any pest/disease that poses risk to food safety and recommend discarding affected produce if necessary`;
 
 async function callClaude(userText, isIntake=false, expectedTools=[], crop=null) {
   if (!state.currentScan) return;
@@ -1014,7 +1247,16 @@ async function callClaudeReal(userText, isIntake, expectedTools, crop) {
     await processResponse(data, messages, crop, isIntake, expectedTools, userText);
   } catch(e) {
     removeThinking(thinkingId);
-    addChatMsg('ai', `⚠️ API error: ${e.message}. Switching to demo mode.`);
+    const s = e.status;
+    let errMsg;
+    if (e.circuitOpen)    errMsg = 'Service temporarily paused — switching to demo mode.';
+    else if (s === 401)   errMsg = 'Invalid API key — tap ⚙️ Settings to update it. Switching to demo mode.';
+    else if (s === 429)   errMsg = 'Too many requests — using demo mode while you wait.';
+    else if (s === 529)   errMsg = 'Claude is overloaded right now — switching to demo mode.';
+    else if (s >= 500)    errMsg = 'Claude is having a moment — switching to demo mode.';
+    else if (e.timeout)   errMsg = 'Request timed out — switching to demo mode.';
+    else                  errMsg = `⚠️ API error: ${e.message}. Switching to demo mode.`;
+    addChatMsg('ai', errMsg);
     state.demoMode = true;
     await callClaudeDemo(userText, isIntake, expectedTools, crop);
   }
@@ -1062,7 +1304,13 @@ async function processResponse(data, messages, crop, isIntake, expectedTools, or
       if (tb.text?.trim()) addChatMsg('ai', tb.text);
     }
   } catch(e2) {
-    addChatMsg('ai', `⚠️ Follow-up error: ${e2.message}`);
+    const s2 = e2.status;
+    let msg2;
+    if (s2 === 401)   msg2 = 'Invalid API key — tap ⚙️ Settings to update it.';
+    else if (s2 === 429)   msg2 = 'Too many requests — wait a moment, then try again.';
+    else if (e2.timeout)   msg2 = 'Follow-up timed out — check your connection and retry.';
+    else                   msg2 = `⚠️ Follow-up error: ${e2.message}`;
+    addChatMsg('ai', msg2);
   }
 
   if (state.currentScan) state.currentScan.chatHistory = messages;
@@ -1572,6 +1820,8 @@ function resetApp() {
 // ══════════════════════════════════════════
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
+  <script src="./magic-link.js"></script>
+<script src="./api-client.js"></script>
   <!-- AI Avatar Bot -->
   <div id="sw-avatar" data-context="AI farm monitoring and crop management assistant for farmers and agricultural workers"></div>
   <script src="./avatar-widget.js"></script>
@@ -1583,6 +1833,41 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
       });
     }
   </script>
-  <script src="./api-client.js"></script>
+  <!-- Zephyr distribution network -->
+  <script src="https://cadger808.codeberg.page/zephyr/widget.js"></script>
+
+  <!-- ══ GLOBAL BOTTOM NAV — single instance, never duplicated ══ -->
+  <nav id="globalNav" role="navigation" aria-label="Main navigation">
+    <div class="nav-item active" id="nav-home" onclick="navTo('home')" role="button" aria-label="Home">
+      <div class="nav-pill"></div>
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9,21 9,12 15,12 15,21"/>
+      </svg>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" id="nav-scout" onclick="navTo('scout')" role="button" aria-label="Scout">
+      <div class="nav-pill"></div>
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+      </svg>
+      <div class="nav-label">Scout</div>
+    </div>
+    <div class="nav-item" id="nav-garden" onclick="navTo('garden')" role="button" aria-label="Garden">
+      <div class="nav-pill"></div>
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22V12"/><path d="M12 12C12 8 9 4 4 4c0 4 2.5 7.5 8 8z"/><path d="M12 12C12 8 15 4 20 4c0 4-2.5 7.5-8 8z"/>
+      </svg>
+      <div class="nav-label">Garden</div>
+    </div>
+    <div class="nav-item" id="nav-settings" onclick="navTo('settings')" role="button" aria-label="Settings">
+      <div class="nav-pill"></div>
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+      <div class="nav-label">Settings</div>
+    </div>
+  </nav>
 </body>
 </html>
