@@ -10,7 +10,7 @@
   function getShareUrl() {
     var m = document.querySelector('meta[name="share-url"]');
     if (m && m.content) return m.content;
-    return window.SHARE_URL || 'https://cadger808.codeberg.page/glowai';
+    return window.SHARE_URL || 'https://cadger808.codeberg.page/farmsense';
   }
   function getShareTitle() {
     var m = document.querySelector('meta[name="application-name"]');
@@ -166,7 +166,7 @@
   }
 
   // Also expose legacy helper so existing callsites still work
-  window.shareGlowAI = function () {
+  window.shareFarmSense = function () {
     var url   = getShareUrl();
     var title = getShareTitle();
     var text  = getShareText();
@@ -176,5 +176,6 @@
       legacyCopy(url);
     }
   };
+  window.shareGlowAI = window.shareFarmSense;
 
 })();

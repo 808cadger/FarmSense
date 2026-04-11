@@ -1,8 +1,10 @@
-const CACHE = 'v2-farmsense';
+const CACHE = 'v4-farmsense';
 const PRECACHE = [
   './',
   './index.html',
   './manifest.json',
+  './magic-link.js',
+  './api-client.js',
   './avatar-widget.js',
   './share-widget.js',
   './icons/icon-192.png',

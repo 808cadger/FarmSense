@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://api.anthropic.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://cadger808.codeberg.page; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://api.anthropic.com https://cadger808.codeberg.page;">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="application-name" content="FarmSense">
+  <meta name="description" content="Monitor crops, track soil health, and get AI-guided farm decisions tailored to your land.">
   <title>FarmSense</title>
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#7CB342">
@@ -168,9 +170,13 @@
       border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
     .home-hero::before { content:''; position:absolute; top:-30px; right:-20px; width:160px; height:160px;
       border-radius:50%; background:radial-gradient(circle, rgba(109,191,74,0.12) 0%, transparent 70%); pointer-events:none; }
+    .hero-chip-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+    .hero-chip { display:inline-flex; align-items:center; min-height:28px; padding:0 10px; border-radius:999px; background:rgba(109,191,74,0.12); border:1px solid var(--border-hi); color:var(--accent); font-size:10px; font-weight:700; letter-spacing:0.9px; text-transform:uppercase; }
+    .hero-chip.gold { background:rgba(212,168,83,0.12); border-color:rgba(212,168,83,0.25); color:var(--accent2); }
     .home-greeting { font-size:13px; font-weight:500; color:var(--text-muted); margin-bottom:4px; letter-spacing:0.2px; }
     .home-title { font-size:26px; font-weight:800; letter-spacing:-0.8px; line-height:1.15; }
     .home-title span { background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .home-subtitle { font-size:13px; color:var(--text-muted); line-height:1.55; margin-top:10px; max-width:320px; }
     .home-stats { display:flex; gap:12px; margin-top:16px; }
     .home-stat { flex:1; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:var(--r-sm); padding:10px 12px; }
     .home-stat-val { font-size:20px; font-weight:800; color:var(--accent); line-height:1; }
@@ -225,8 +231,8 @@
     .health-ring-status { font-size:13px; font-weight:700; }
 
     /* ── EMPTY STATE ── */
-    .empty-state { text-align:center; padding:44px 20px; }
-    .empty-icon { font-size:52px; margin-bottom:14px; }
+    .empty-state { text-align:center; padding:26px 20px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); box-shadow:var(--shadow-card); }
+    .empty-icon { font-size:44px; margin-bottom:12px; }
     .empty-title { font-size:18px; font-weight:700; letter-spacing:-0.3px; margin-bottom:6px; }
     .empty-sub { font-size:13px; color:var(--text-muted); line-height:1.55; max-width:260px; margin:0 auto; }
 
@@ -465,8 +471,13 @@
   <div class="home-hero">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0">
       <div>
+        <div class="hero-chip-row">
+          <span class="hero-chip">AI Crop Monitor</span>
+          <span class="hero-chip gold">Season Aware</span>
+        </div>
         <div class="home-greeting" id="homeGreeting">Good morning</div>
         <div class="home-title"><span id="homeTitle">Your Farm</span></div>
+        <div class="home-subtitle">Stay ahead of disease, soil issues, and harvest timing with one daily cockpit for your micro-farm.</div>
       </div>
       <a href="https://cadger808.codeberg.page/zephyr" target="_blank" rel="noopener noreferrer"
          style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:linear-gradient(135deg,#06B6D4,#0EA5E9);border-radius:10px;text-decoration:none;font-size:17px;box-shadow:0 3px 12px rgba(6,182,212,.4);flex-shrink:0;transition:transform .15s cubic-bezier(.4,0,.2,1)"

@@ -14,3 +14,4 @@ Thumbs.db
 *.log
 .expo/
 dist/
+!www/.gitignore
