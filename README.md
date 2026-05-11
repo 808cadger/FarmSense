@@ -1,10 +1,35 @@
 # FarmSense
 
+[![Release](https://img.shields.io/github/v/release/808cadger/FarmSense?include_prereleases&label=release)](https://github.com/808cadger/FarmSense/releases)
+[![Last commit](https://img.shields.io/github/last-commit/808cadger/FarmSense)](https://github.com/808cadger/FarmSense/commits)
+[![License](https://img.shields.io/github/license/808cadger/FarmSense)](https://github.com/808cadger/FarmSense/blob/HEAD/LICENSE)
+![Platforms](https://img.shields.io/badge/platform-Web%2FPWA%2C%20Android%2C%20Desktop-2563eb)
+
+AI crop monitoring app for crop scans, pest and disease guidance, treatment plans, and harvest scheduling.
+
+## Project Snapshot
+
+| Area | Details |
+|------|---------|
+| Primary use case | AI crop monitoring app for crop scans, pest and disease guidance, treatment plans, and harvest scheduling. |
+| Platforms | Web/PWA, Android, Desktop |
+| Core stack | JavaScript, Capacitor, Android, Electron, Claude AI |
+| Review first | `www/index.html`, `index.html`, `android`, `capacitor.config.json`, `package.json` |
+
 ## Download Links
 
-- **iOS / iPhone:** Open the PWA in Safari: [FarmSense iOS install](https://808cadger.github.io/FarmSense/) and choose **Share -> Add to Home Screen**.
-- **Android:** Download the latest APK from GitHub Releases: [FarmSense Android releases](https://github.com/808cadger/FarmSense/releases/latest).
-- **Source download:** [Download the GitHub source ZIP](https://github.com/808cadger/FarmSense/archive/refs/heads/main.zip).
+| Platform | Link |
+|----------|------|
+| iOS / iPhone | [Open the PWA in Safari](https://808cadger.github.io/FarmSense/) and choose **Share -> Add to Home Screen** |
+| Android | [Download the latest APK from GitHub Releases](https://github.com/808cadger/FarmSense/releases/latest) |
+| Source | [Download the GitHub source ZIP](https://github.com/808cadger/FarmSense/archive/refs/heads/main.zip) |
+| Repository | [View on GitHub](https://github.com/808cadger/FarmSense) |
+
+## Why This Repo Is Worth Reviewing
+
+- Crop health workflows are organized around scan -> diagnosis -> action.
+- PWA and Android delivery make the tool usable in the field.
+- Device-first API-key handling keeps farm data under user control.
 
 
 <!-- INSTALL-START -->
