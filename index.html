@@ -518,7 +518,6 @@ const APP_SCREENS = new Set(['home','scout','garden','settings']);
 function loadState() {
   state.profile = JSON.parse(localStorage.getItem(LS.profile) || 'null');
   state.garden = JSON.parse(localStorage.getItem(LS.garden) || '[]');
-  if (window.MagicLink) MagicLink.apply(LS.apikey);
   state.apiKey = localStorage.getItem(LS.apikey) || '';
   state.biometricEnabled = localStorage.getItem(LS.biometric) === 'true';
   state.demoMode = localStorage.getItem(LS.demo) !== 'false';
@@ -1111,7 +1110,6 @@ function toggleBiometric() { state.biometricEnabled=!state.biometricEnabled; loc
 function resetApp() { if(confirm('Reset all farm data? Cannot be undone.')) { Object.values(LS).forEach(k=>localStorage.removeItem(k)); location.reload(); } }
 function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
 </script>
-<script src="./magic-link.js"></script>
 <script src="./api-client.js"></script>
 <div id="sw-avatar" data-context="AI farm monitoring and crop management assistant"></div>
 <script src="./avatar-widget.js"></script>
