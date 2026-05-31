@@ -1155,14 +1155,14 @@ async function analyzeImage(file) {
 }
 
 async function callClaudeVision(apiKey, base64, mimeType, crop, cropName) {
-  // #ASSUMPTION: claude-opus-4-6 supports image vision — confirmed for multimodal models
+  // #ASSUMPTION: claude-opus-4-8 supports image vision — confirmed for multimodal models
   const thinkId = addThinking();
   const taskBar = ['identify_plant_disease', 'assess_crop_health', 'recommend_treatment', 'generate_care_plan'];
   showAgentTaskBar(taskBar);
 
   try {
     const visionPayload = {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 2048,
       system: `You are FarmSense Vision AI. Analyze plant/crop photos and return structured JSON only.
 Respond with ONLY valid JSON in this exact shape:
