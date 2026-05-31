@@ -835,7 +835,7 @@ async function callClaudeVision(apiKey, base64, mimeType, crop, cropName) {
   showAgentTaskBar(taskBar);
   try {
     const data = await ClaudeAPI.call(apiKey, {
-      model:'claude-opus-4-6', max_tokens:2048,
+      model:'claude-opus-4-8', max_tokens:2048,
       system:`You are FarmSense Vision AI. Analyze plant/crop photos and return ONLY valid JSON:\n{"healthScore":<0-100>,"disease":"<name or 'None detected'>","severity":"<None|Mild|Moderate|Severe>","confidence":"<0-100>%","symptoms":["..."],"treatment":"<organic recommendation>","immediateActions":["..."],"notes":"<1-2 sentence summary>"}`,
       messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mimeType,data:base64}},{type:'text',text:`Analyze this ${cropName} photo. Return JSON only.`}]}]
     }, {timeoutMs:60000,maxRetries:2});
